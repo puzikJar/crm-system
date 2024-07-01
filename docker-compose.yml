@@ -1,0 +1,37 @@
+version: '2.27.0'
+
+services:
+  crm-service:
+    image: 'crm-application:latest'
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+    links:
+      - redis
+    container_name: crm-application
+    depends_on:
+      - db
+      - redis
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - DATASOURCE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - HIBERNATE_USE_JDBC_METADATA_DEFAULTS=false
+
+  db:
+    image: 'postgres:16'
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    container_name: redis
+    image: 'redis'
+    ports:
+      - "6379:6379"
